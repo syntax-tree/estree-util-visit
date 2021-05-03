@@ -2,9 +2,9 @@ import {color} from './color.js'
 
 var own = {}.hasOwnProperty
 
-export var CONTINUE = Symbol('continue')
-export var SKIP = Symbol('skip')
-export var EXIT = Symbol('exit')
+export const CONTINUE = Symbol('continue')
+export const SKIP = Symbol('skip')
+export const EXIT = Symbol('exit')
 
 export function visit(tree, visitor) {
   var enter = visitor
@@ -89,6 +89,6 @@ function nodelike(value) {
     value &&
       typeof value === 'object' &&
       typeof value.type === 'string' &&
-      value.type.length
+      value.type.length > 0
   )
 }

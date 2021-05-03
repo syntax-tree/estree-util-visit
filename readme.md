@@ -16,13 +16,14 @@ Also has nice stack traces if something crashes.
 
 ## Install
 
+This package is [ESM only](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c):
+Node 12+ is needed to use it and it must be `import`ed instead of `require`d.
+
 [npm][]:
 
 ```sh
 npm install estree-util-visit
 ```
-
-Note that this package is ESM only: it must be imported instead of required.
 
 ## Use
 
@@ -56,9 +57,8 @@ Yields:
 
 ## API
 
-`estree-util-visit` exports the following identifiers:
-[`visit`](#visittree-visitorvisitors), [`EXIT`](#action), [`CONTINUE`](#action),
-and [`SKIP`](#action).
+This package exports the following identifiers: `visit`, `EXIT`, `CONTINUE`, and
+`SKIP`.
 There is no default export.
 
 ### `visit(tree, visitor|visitors)`

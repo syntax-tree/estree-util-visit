@@ -29,8 +29,9 @@
   "contributors": [
     "Titus Wormer <tituswormer@gmail.com> (https://wooorm.com)"
   ],
+  "sideEffects": false,
   "type": "module",
-  "module": "./index.js",
+  "main": "index.js",
   "browser": {
     "./color.js": "./color.browser.js"
   },
@@ -53,8 +54,8 @@
   },
   "scripts": {
     "format": "remark . -qfo && prettier . -w --loglevel warn && xo --fix",
-    "test-api": "node test",
-    "test-coverage": "c8 --check-coverage --branches 100 --functions 100 --lines 100 --statements 100 --reporter lcov node --experimental-modules test.js",
+    "test-api": "node test.js",
+    "test-coverage": "c8 --check-coverage --branches 100 --functions 100 --lines 100 --statements 100 --reporter lcov node test.js",
     "test": "npm run format && npm run test-coverage"
   },
   "prettier": {
@@ -67,13 +68,10 @@
   },
   "xo": {
     "prettier": true,
-    "ignores": [],
     "rules": {
-      "import/no-mutable-exports": "off",
       "max-depth": "off",
       "no-var": "off",
-      "prefer-arrow-callback": "off",
-      "unicorn/explicit-length-check": "off"
+      "prefer-arrow-callback": "off"
     }
   },
   "remarkConfig": {
