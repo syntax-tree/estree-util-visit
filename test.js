@@ -1,13 +1,17 @@
-'use strict'
+/**
+ * @typedef {import('unist').Node} Node
+ */
 
 import assert from 'assert'
 import test from 'tape'
 import {parse} from 'acorn'
 import {visit, EXIT, SKIP} from './index.js'
 
+/** @type {import('estree-jsx').Node} */
+// @ts-ignore it’s fine.
 var tree = parse(
   'export function x() { console.log(1 + "2"); process.exit(1) }',
-  {sourceType: 'module'}
+  {sourceType: 'module', ecmaVersion: 2021}
 )
 
 var preorder = [
@@ -62,7 +66,7 @@ test('estree-util-visit', function (t) {
   var count = 0
 
   visit(tree, function (node) {
-    assert.equal(node.type, preorder[count++])
+    assert.strictEqual(node.type, preorder[count++])
   })
 
   t.equal(count, 19, 'should walk')
@@ -71,7 +75,7 @@ test('estree-util-visit', function (t) {
 
   visit(tree, {
     leave(node) {
-      assert.equal(node.type, postorder[count++])
+      assert.strictEqual(node.type, postorder[count++])
     }
   })
 
@@ -82,10 +86,10 @@ test('estree-util-visit', function (t) {
 
   visit(tree, {
     enter(node) {
-      assert.equal(node.type, preorder[count++])
+      assert.strictEqual(node.type, preorder[count++])
     },
     leave(node) {
-      assert.equal(node.type, postorder[postCount++])
+      assert.strictEqual(node.type, postorder[postCount++])
     }
   })
 
@@ -95,7 +99,7 @@ test('estree-util-visit', function (t) {
   count = 0
 
   visit(tree, function (node) {
-    assert.equal(node.type, preorder[count++])
+    assert.strictEqual(node.type, preorder[count++])
     if (node.type === 'CallExpression') return EXIT
   })
 
@@ -104,7 +108,7 @@ test('estree-util-visit', function (t) {
   count = 0
 
   visit(tree, function (node) {
-    assert.equal(node.type, preorder[count++])
+    assert.strictEqual(node.type, preorder[count++])
     if (node.type === 'CallExpression') return [EXIT]
   })
 
@@ -114,7 +118,7 @@ test('estree-util-visit', function (t) {
 
   visit(tree, {
     leave(node) {
-      assert.equal(node.type, postorder[count++])
+      assert.strictEqual(node.type, postorder[count++])
       if (node.type === 'CallExpression') return EXIT
     }
   })
@@ -126,11 +130,11 @@ test('estree-util-visit', function (t) {
   t.doesNotThrow(function () {
     visit(tree, {
       enter(node) {
-        assert.equal(node.type, preorder[count++])
+        assert.strictEqual(node.type, preorder[count++])
         if (node.type === 'CallExpression') return EXIT
       },
       leave(node) {
-        assert.notEqual(node.type, 'CallExpression')
+        assert.notStrictEqual(node.type, 'CallExpression')
       }
     })
   }, 'should not call `leave` after `enter` returned EXIT')
@@ -139,7 +143,7 @@ test('estree-util-visit', function (t) {
   var skip = 0
 
   visit(tree, function (node) {
-    assert.equal(node.type, preorder[count++ + skip])
+    assert.strictEqual(node.type, preorder[count++ + skip])
 
     if (node.type === 'CallExpression') {
       skip = 6 // Skip a couple nodes.
@@ -152,7 +156,7 @@ test('estree-util-visit', function (t) {
   count = 0
 
   visit(tree, function (node, key, index) {
-    assert.deepEqual(
+    assert.deepStrictEqual(
       [key, index],
       count === 0
         ? [null, null]
@@ -162,7 +166,7 @@ test('estree-util-visit', function (t) {
       '`key` and `index` (' + count + ')'
     )
 
-    assert.equal(node.type, preorder[count++])
+    assert.strictEqual(node.type, preorder[count++])
 
     if (node.type === 'FunctionDeclaration') return EXIT
   })
@@ -171,6 +175,7 @@ test('estree-util-visit', function (t) {
 
   count = 0
 
+  // @ts-ignore runtime.
   visit({type: 'Program', position: {type: '!'}}, function () {
     count++
   })
@@ -203,13 +208,16 @@ test('estree-util-visit', function (t) {
 
   tree = JSON.parse(
     JSON.stringify(
-      parse(';[1, 2, 3, 4]', {sourceType: 'module'}).body[1].expression
+      // @ts-ignore It’s fine!
+      parse(';[1, 2, 3, 4]', {sourceType: 'module', ecmaVersion: 2021}).body[1]
+        .expression
     )
   )
 
   visit(tree, function (node, key, index, parents) {
     if (key === 'elements' && node.type === 'Literal' && node.value === 3) {
       // Remove the previous element.
+      // @ts-ignore it’s
       parents[parents.length - 1][key].splice(index - 1, 1)
       // Move to the element now at `index`.
       return index
