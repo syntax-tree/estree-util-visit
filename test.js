@@ -192,6 +192,7 @@ test('estree-util-visit', function (t) {
 
   count = 0
 
+  // @ts-expect-error: meant to be custom.
   visit({type: 'Program', random: {type: '!'}}, function () {
     count++
   })
@@ -200,6 +201,7 @@ test('estree-util-visit', function (t) {
 
   count = 0
 
+  // @ts-expect-error: meant to be custom.
   visit({type: 'Program', random: [1, 2, {type: '!'}]}, function () {
     count++
   })
@@ -215,7 +217,12 @@ test('estree-util-visit', function (t) {
   )
 
   visit(tree, function (node, key, index, parents) {
-    if (key === 'elements' && node.type === 'Literal' && node.value === 3) {
+    if (
+      key === 'elements' &&
+      node.type === 'Literal' &&
+      'value' in node &&
+      node.value === 3
+    ) {
       // Remove the previous element.
       // @ts-ignore it’s
       parents[parents.length - 1][key].splice(index - 1, 1)
