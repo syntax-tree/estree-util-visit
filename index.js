@@ -31,7 +31,7 @@
 
 import {color} from './color.js'
 
-var own = {}.hasOwnProperty
+const own = {}.hasOwnProperty
 
 /**
  * Continue traversing as normal
@@ -54,9 +54,9 @@ export const EXIT = Symbol('exit')
  */
 export function visit(tree, visitor) {
   /** @type {Visitor} */
-  var enter
+  let enter
   /** @type {Visitor} */
-  var leave
+  let leave
 
   if (typeof visitor === 'function') {
     enter = visitor
@@ -80,27 +80,21 @@ export function visit(tree, visitor) {
 
     return visit
 
+    /**
+     * @returns {ActionTuple}
+     */
     function visit() {
       /** @type {ActionTuple} */
-      var result = enter ? toResult(enter(node, key, index, parents)) : []
-      /** @type {string} */
-      var cKey
-      /** @type {number} */
-      var cIndex
-      /** @type {Array.<Node>} */
-      var grandparents
-      /** @type {ActionTuple} */
-      var subresult
-      /** @type {unknown} */
-      var value
-      /** @type {unknown} */
-      var subvalue
+      const result = enter ? toResult(enter(node, key, index, parents)) : []
 
       if (result[0] === EXIT) {
         return result
       }
 
       if (result[0] !== SKIP) {
+        /** @type {string} */
+        let cKey
+
         for (cKey in node) {
           if (
             own.call(node, cKey) &&
@@ -109,20 +103,28 @@ export function visit(tree, visitor) {
             cKey !== 'data' &&
             cKey !== 'position'
           ) {
-            value = node[cKey]
-
-            grandparents = parents.concat(node)
+            /** @type {unknown} */
+            const value = node[cKey]
+            const grandparents = parents.concat(node)
 
             if (Array.isArray(value)) {
-              cIndex = 0
+              let cIndex = 0
 
+              // `any`s
               // type-coverage:ignore-next-line Looks like `unknown[]`.
               while (cIndex > -1 && cIndex < value.length) {
+                /** @type {unknown} */
+                // `any`s
                 // type-coverage:ignore-next-line Looks like `unknown[]`.
-                subvalue = value[cIndex]
+                const subvalue = value[cIndex]
 
                 if (nodelike(subvalue)) {
-                  subresult = build(subvalue, cKey, cIndex, grandparents)()
+                  const subresult = build(
+                    subvalue,
+                    cKey,
+                    cIndex,
+                    grandparents
+                  )()
                   if (subresult[0] === EXIT) return subresult
                   cIndex =
                     typeof subresult[1] === 'number' ? subresult[1] : cIndex + 1
@@ -131,7 +133,7 @@ export function visit(tree, visitor) {
                 }
               }
             } else if (nodelike(value)) {
-              subresult = build(value, cKey, null, grandparents)()
+              const subresult = build(value, cKey, null, grandparents)()
               if (subresult[0] === EXIT) return subresult
             }
           }

@@ -9,12 +9,12 @@ import {visit, EXIT, SKIP} from './index.js'
 
 /** @type {import('estree-jsx').Node} */
 // @ts-ignore it’s fine.
-var tree = parse(
+let tree = parse(
   'export function x() { console.log(1 + "2"); process.exit(1) }',
   {sourceType: 'module', ecmaVersion: 2021}
 )
 
-var preorder = [
+const preorder = [
   'Program',
   'ExportNamedDeclaration',
   'FunctionDeclaration',
@@ -36,7 +36,7 @@ var preorder = [
   'Literal'
 ]
 
-var postorder = [
+const postorder = [
   'Identifier',
   'Identifier',
   'Identifier',
@@ -58,14 +58,14 @@ var postorder = [
   'Program'
 ]
 
-test('estree-util-visit', function (t) {
-  t.doesNotThrow(function () {
+test('estree-util-visit', (t) => {
+  t.doesNotThrow(() => {
     visit(tree)
   }, 'should succeed w/o tree')
 
-  var count = 0
+  let count = 0
 
-  visit(tree, function (node) {
+  visit(tree, (node) => {
     assert.strictEqual(node.type, preorder[count++])
   })
 
@@ -82,7 +82,7 @@ test('estree-util-visit', function (t) {
   t.equal(count, 19, 'should walk in postorder w/ `leave`')
 
   count = 0
-  var postCount = 0
+  let postCount = 0
 
   visit(tree, {
     enter(node) {
@@ -98,7 +98,7 @@ test('estree-util-visit', function (t) {
 
   count = 0
 
-  visit(tree, function (node) {
+  visit(tree, (node) => {
     assert.strictEqual(node.type, preorder[count++])
     if (node.type === 'CallExpression') return EXIT
   })
@@ -107,7 +107,7 @@ test('estree-util-visit', function (t) {
 
   count = 0
 
-  visit(tree, function (node) {
+  visit(tree, (node) => {
     assert.strictEqual(node.type, preorder[count++])
     if (node.type === 'CallExpression') return [EXIT]
   })
@@ -127,7 +127,7 @@ test('estree-util-visit', function (t) {
 
   count = 0
 
-  t.doesNotThrow(function () {
+  t.doesNotThrow(() => {
     visit(tree, {
       enter(node) {
         assert.strictEqual(node.type, preorder[count++])
@@ -140,9 +140,9 @@ test('estree-util-visit', function (t) {
   }, 'should not call `leave` after `enter` returned EXIT')
 
   count = 0
-  var skip = 0
+  let skip = 0
 
-  visit(tree, function (node) {
+  visit(tree, (node) => {
     assert.strictEqual(node.type, preorder[count++ + skip])
 
     if (node.type === 'CallExpression') {
@@ -155,7 +155,7 @@ test('estree-util-visit', function (t) {
 
   count = 0
 
-  visit(tree, function (node, key, index) {
+  visit(tree, (node, key, index) => {
     assert.deepStrictEqual(
       [key, index],
       count === 0
@@ -176,7 +176,7 @@ test('estree-util-visit', function (t) {
   count = 0
 
   // @ts-ignore runtime.
-  visit({type: 'Program', position: {type: '!'}}, function () {
+  visit({type: 'Program', position: {type: '!'}}, () => {
     count++
   })
 
@@ -184,7 +184,7 @@ test('estree-util-visit', function (t) {
 
   count = 0
 
-  visit({type: 'Program', data: {type: '!'}}, function () {
+  visit({type: 'Program', data: {type: '!'}}, () => {
     count++
   })
 
@@ -193,7 +193,7 @@ test('estree-util-visit', function (t) {
   count = 0
 
   // @ts-expect-error: meant to be custom.
-  visit({type: 'Program', random: {type: '!'}}, function () {
+  visit({type: 'Program', random: {type: '!'}}, () => {
     count++
   })
 
@@ -202,7 +202,7 @@ test('estree-util-visit', function (t) {
   count = 0
 
   // @ts-expect-error: meant to be custom.
-  visit({type: 'Program', random: [1, 2, {type: '!'}]}, function () {
+  visit({type: 'Program', random: [1, 2, {type: '!'}]}, () => {
     count++
   })
 
@@ -216,7 +216,7 @@ test('estree-util-visit', function (t) {
     )
   )
 
-  visit(tree, function (node, key, index, parents) {
+  visit(tree, (node, key, index, parents) => {
     if (
       key === 'elements' &&
       node.type === 'Literal' &&

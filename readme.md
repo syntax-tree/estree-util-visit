@@ -31,13 +31,13 @@ npm install estree-util-visit
 import {parse} from 'acorn'
 import {visit} from 'estree-util-visit'
 
-var tree = parse(
+const tree = parse(
   'export function x() { console.log(1 + "2"); process.exit(3) }',
-  {sourceType: 'module'}
+  {sourceType: 'module', ecmaVersion: 2020}
 )
 
-visit(tree, function (node) {
-  if (node.type === 'Literal') console.log(node.value)
+visit(tree, (node) => {
+  if (node.type === 'Literal' && 'value' in node) console.log(node.value)
 })
 
 // Both enter and leave:
