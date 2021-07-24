@@ -8,7 +8,7 @@ import {parse} from 'acorn'
 import {visit, EXIT, SKIP} from './index.js'
 
 /** @type {import('estree-jsx').Node} */
-// @ts-ignore it’s fine.
+// @ts-expect-error it’s fine.
 let tree = parse(
   'export function x() { console.log(1 + "2"); process.exit(1) }',
   {sourceType: 'module', ecmaVersion: 2021}
@@ -175,7 +175,7 @@ test('estree-util-visit', (t) => {
 
   count = 0
 
-  // @ts-ignore runtime.
+  // @ts-expect-error runtime.
   visit({type: 'Program', position: {type: '!'}}, () => {
     count++
   })
@@ -210,7 +210,7 @@ test('estree-util-visit', (t) => {
 
   tree = JSON.parse(
     JSON.stringify(
-      // @ts-ignore It’s fine!
+      // @ts-expect-error It’s fine!
       parse(';[1, 2, 3, 4]', {sourceType: 'module', ecmaVersion: 2021}).body[1]
         .expression
     )
@@ -224,7 +224,7 @@ test('estree-util-visit', (t) => {
       node.value === 3
     ) {
       // Remove the previous element.
-      // @ts-ignore it’s
+      // @ts-expect-error it’s
       parents[parents.length - 1][key].splice(index - 1, 1)
       // Move to the element now at `index`.
       return index

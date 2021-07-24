@@ -53,9 +53,9 @@ export const EXIT = Symbol('exit')
  * @param {Visitor|Visitors} [visitor] Function to run for each node
  */
 export function visit(tree, visitor) {
-  /** @type {Visitor} */
+  /** @type {Visitor|undefined} */
   let enter
-  /** @type {Visitor} */
+  /** @type {Visitor|undefined} */
   let leave
 
   if (typeof visitor === 'function') {
@@ -98,12 +98,15 @@ export function visit(tree, visitor) {
         for (cKey in node) {
           if (
             own.call(node, cKey) &&
+            // @ts-expect-error: indexable.
             node[cKey] &&
+            // @ts-expect-error: indexable.
             typeof node[cKey] === 'object' &&
             cKey !== 'data' &&
             cKey !== 'position'
           ) {
             /** @type {unknown} */
+            // @ts-expect-error: indexable.
             const value = node[cKey]
             const grandparents = parents.concat(node)
 
@@ -169,9 +172,9 @@ function nodelike(value) {
   return Boolean(
     value &&
       typeof value === 'object' &&
-      // @ts-ignore Looks like a node.
+      // @ts-expect-error Looks like a node.
       typeof value.type === 'string' &&
-      // @ts-ignore Looks like a node.
+      // @ts-expect-error Looks like a node.
       value.type.length > 0
   )
 }
