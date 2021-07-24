@@ -2,7 +2,7 @@
  * @typedef {import('unist').Node} Node
  */
 
-import assert from 'assert'
+import assert from 'node:assert'
 import test from 'tape'
 import {parse} from 'acorn'
 import {visit, EXIT, SKIP} from './index.js'
