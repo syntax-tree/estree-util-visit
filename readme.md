@@ -108,7 +108,7 @@ needing to return a new `index`.
 *   `key` (`string?`) — Field at which `node` lives in its parent
 *   `index` (`number?`) — Index at which `node` lives if `parent[key]` is an
     array
-*   `ancestors` (`Array.<Node>`) — [Ancestor][]s of `node`
+*   `ancestors` (`Array<Node>`) — [Ancestor][]s of `node`
 
 ##### Returns
 
@@ -116,7 +116,7 @@ The return value can have the following forms:
 
 *   `index` (`number`) — Treated as a tuple of `[CONTINUE, index]`
 *   `action` (`symbol`) — Treated as a tuple of `[action]`
-*   `tuple` (`Array.<symbol|number>`) — List with one or two values, the first
+*   `tuple` (`Array<symbol|number>`) — List with one or two values, the first
     an `action`, the second and `index`.
     Note that passing a tuple only makes sense if the `action` is `SKIP`.
     If the `action` is `EXIT`, that action can be returned.

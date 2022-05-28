@@ -3,23 +3,29 @@
  * @typedef {import('unist').Node} UnistNode
  * @typedef {EstreeNode|UnistNode} Node
  *
- * @typedef {CONTINUE|SKIP|EXIT} Action Union of the action types
- * @typedef {number} Index Move to the sibling at index next (after node itself
- *   is completely traversed).
+ * @typedef {CONTINUE|SKIP|EXIT} Action
+ *   Union of the action types.
+ * @typedef {number} Index
+ *   Move to the sibling at index next (after node itself is completely
+ *   traversed).
  *   Useful if mutating the tree, such as removing the node the visitor is
  *   currently on, or any of its previous siblings.
  *   Results less than 0 or greater than or equal to `children.length` stop
- *   traversing the parent
+ *   traversing the parent.
  * @typedef {[(Action|null|undefined|void)?, (Index|null|undefined)?]} ActionTuple
  *   List with one or two values, the first an action, the second an index.
  */
 
 /**
  * @callback Visitor
- * @param {Node} node Found node
- * @param {string?} key Field at which `node` lives
- * @param {number?} index Position at which `node` lives
- * @param {Array.<Node>} ancestors Ancestors of node
+ * @param {Node} node
+ *   Found node.
+ * @param {string?} key
+ *   Field at which `node` lives.
+ * @param {number?} index
+ *   Position at which `node` lives.
+ * @param {Array<Node>} ancestors
+ *   Ancestors of node.
  * @returns {null|undefined|Action|Index|ActionTuple|void}
  */
 
@@ -47,10 +53,12 @@ export const SKIP = Symbol('skip')
 export const EXIT = Symbol('exit')
 
 /**
- * Visit children of tree which pass a test
+ * Visit children of tree which pass a test.
  *
- * @param {Node} tree Abstract syntax tree to walk
- * @param {Visitor|Visitors} [visitor] Function to run for each node
+ * @param {Node} tree
+ *   Abstract syntax tree to walk.
+ * @param {Visitor|Visitors} [visitor]
+ *   Function to run for each node.
  */
 export function visit(tree, visitor) {
   /** @type {Visitor|undefined} */
@@ -71,7 +79,7 @@ export function visit(tree, visitor) {
    * @param {Node} node
    * @param {string?} key
    * @param {number?} index
-   * @param {Array.<Node>} parents
+   * @param {Array<Node>} parents
    */
   function build(node, key, index, parents) {
     if (nodelike(node)) {
@@ -114,11 +122,11 @@ export function visit(tree, visitor) {
               let cIndex = 0
 
               // `any`s
-              // type-coverage:ignore-next-line Looks like `unknown[]`.
+              // type-coverage:ignore-next-line Looks like `Array<unknown>`.
               while (cIndex > -1 && cIndex < value.length) {
                 /** @type {unknown} */
                 // `any`s
-                // type-coverage:ignore-next-line Looks like `unknown[]`.
+                // type-coverage:ignore-next-line Looks like `Array<unknown>`.
                 const subvalue = value[cIndex]
 
                 if (nodelike(subvalue)) {
