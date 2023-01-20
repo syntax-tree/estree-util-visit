@@ -6,8 +6,15 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import {parse} from 'acorn'
 import {visit, EXIT, SKIP} from './index.js'
+import * as mod from './index.js'
 
 test('visit', () => {
+  assert.deepEqual(
+    Object.keys(mod).sort(),
+    ['CONTINUE', 'EXIT', 'SKIP', 'visit'],
+    'should expose the public api'
+  )
+
   /** @type {Program} */
   // @ts-expect-error: acorn looks like estree.
   let tree = parse(
