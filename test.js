@@ -1,14 +1,13 @@
 /**
- * @typedef {import('estree-jsx').Node} Node
  * @typedef {import('estree-jsx').Program} Program
  */
 
-import assert from 'node:assert'
-import test from 'tape'
+import assert from 'node:assert/strict'
+import test from 'node:test'
 import {parse} from 'acorn'
 import {visit, EXIT, SKIP} from './index.js'
 
-test('estree-util-visit', (t) => {
+test('visit', () => {
   /** @type {Program} */
   // @ts-expect-error: acorn looks like estree.
   let tree = parse(
@@ -60,7 +59,7 @@ test('estree-util-visit', (t) => {
     'Program'
   ]
 
-  t.doesNotThrow(() => {
+  assert.doesNotThrow(() => {
     visit(tree)
   }, 'should succeed w/o tree')
 
@@ -72,7 +71,7 @@ test('estree-util-visit', (t) => {
     }
   })
 
-  t.equal(count, 19, 'should walk')
+  assert.equal(count, 19, 'should walk')
 
   count = 0
 
@@ -82,7 +81,7 @@ test('estree-util-visit', (t) => {
     }
   })
 
-  t.equal(count, 19, 'should walk in postorder w/ `leave`')
+  assert.equal(count, 19, 'should walk in postorder w/ `leave`')
 
   count = 0
   let postCount = 0
@@ -96,8 +95,8 @@ test('estree-util-visit', (t) => {
     }
   })
 
-  t.equal(count, 19, 'should walk w/ both `enter` and `leave` (1)')
-  t.equal(postCount, 19, 'should walk w/ both `enter` and `leave` (2)')
+  assert.equal(count, 19, 'should walk w/ both `enter` and `leave` (1)')
+  assert.equal(postCount, 19, 'should walk w/ both `enter` and `leave` (2)')
 
   count = 0
 
@@ -106,7 +105,7 @@ test('estree-util-visit', (t) => {
     if (node.type === 'CallExpression') return EXIT
   })
 
-  t.equal(count, 7, 'should stop when EXIT is returned')
+  assert.equal(count, 7, 'should stop when EXIT is returned')
 
   count = 0
 
@@ -115,7 +114,7 @@ test('estree-util-visit', (t) => {
     if (node.type === 'CallExpression') return [EXIT]
   })
 
-  t.equal(count, 7, 'should stop when EXIT in an array is returned')
+  assert.equal(count, 7, 'should stop when EXIT in an array is returned')
 
   count = 0
 
@@ -126,11 +125,11 @@ test('estree-util-visit', (t) => {
     }
   })
 
-  t.equal(count, 8, 'should stop when EXIT is returned from `leave`')
+  assert.equal(count, 8, 'should stop when EXIT is returned from `leave`')
 
   count = 0
 
-  t.doesNotThrow(() => {
+  assert.doesNotThrow(() => {
     visit(tree, {
       enter(node) {
         assert.strictEqual(node.type, preorder[count++])
@@ -154,7 +153,7 @@ test('estree-util-visit', (t) => {
     }
   })
 
-  t.equal(count, 9, 'should not walk a node when SKIP is returned')
+  assert.equal(count, 9, 'should not walk a node when SKIP is returned')
 
   count = 0
 
@@ -174,7 +173,7 @@ test('estree-util-visit', (t) => {
     if (node.type === 'FunctionDeclaration') return EXIT
   })
 
-  t.equal(count, 3, 'should pass `key` and `index`')
+  assert.equal(count, 3, 'should pass `key` and `index`')
 
   count = 0
 
@@ -191,7 +190,7 @@ test('estree-util-visit', (t) => {
     count++
   })
 
-  t.equal(count, 1, 'should not walk into `position`')
+  assert.equal(count, 1, 'should not walk into `position`')
 
   count = 0
 
@@ -207,7 +206,7 @@ test('estree-util-visit', (t) => {
     count++
   })
 
-  t.equal(count, 1, 'should not walk into `data`')
+  assert.equal(count, 1, 'should not walk into `data`')
 
   count = 0
 
@@ -223,7 +222,7 @@ test('estree-util-visit', (t) => {
     count++
   })
 
-  t.equal(count, 2, 'should walk into other fields')
+  assert.equal(count, 2, 'should walk into other fields')
 
   count = 0
 
@@ -239,7 +238,7 @@ test('estree-util-visit', (t) => {
     count++
   })
 
-  t.equal(count, 2, 'should walk into arrays')
+  assert.equal(count, 2, 'should walk into arrays')
 
   tree = JSON.parse(
     JSON.stringify(
@@ -264,7 +263,7 @@ test('estree-util-visit', (t) => {
     }
   })
 
-  t.deepEqual(
+  assert.deepEqual(
     tree,
     {
       type: 'ArrayExpression',
@@ -278,6 +277,4 @@ test('estree-util-visit', (t) => {
     },
     'should support removing a node and returning the next index'
   )
-
-  t.end()
 })
