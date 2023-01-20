@@ -1,5 +1,6 @@
 /**
- * @typedef {import('unist').Node} Node
+ * @typedef {import('estree-jsx').Node} Node
+ * @typedef {import('estree-jsx').Program} Program
  */
 
 import assert from 'node:assert'
@@ -7,66 +8,68 @@ import test from 'tape'
 import {parse} from 'acorn'
 import {visit, EXIT, SKIP} from './index.js'
 
-/** @type {import('estree-jsx').Node} */
-// @ts-expect-error it’s fine.
-let tree = parse(
-  'export function x() { console.log(1 + "2"); process.exit(1) }',
-  {sourceType: 'module', ecmaVersion: 2021}
-)
-
-const preorder = [
-  'Program',
-  'ExportNamedDeclaration',
-  'FunctionDeclaration',
-  'Identifier',
-  'BlockStatement',
-  'ExpressionStatement',
-  'CallExpression',
-  'MemberExpression',
-  'Identifier',
-  'Identifier',
-  'BinaryExpression',
-  'Literal',
-  'Literal',
-  'ExpressionStatement',
-  'CallExpression',
-  'MemberExpression',
-  'Identifier',
-  'Identifier',
-  'Literal'
-]
-
-const postorder = [
-  'Identifier',
-  'Identifier',
-  'Identifier',
-  'MemberExpression',
-  'Literal',
-  'Literal',
-  'BinaryExpression',
-  'CallExpression',
-  'ExpressionStatement',
-  'Identifier',
-  'Identifier',
-  'MemberExpression',
-  'Literal',
-  'CallExpression',
-  'ExpressionStatement',
-  'BlockStatement',
-  'FunctionDeclaration',
-  'ExportNamedDeclaration',
-  'Program'
-]
-
 test('estree-util-visit', (t) => {
+  /** @type {Program} */
+  // @ts-expect-error: acorn looks like estree.
+  let tree = parse(
+    'export function x() { console.log(1 + "2"); process.exit(1) }',
+    {sourceType: 'module', ecmaVersion: 2021}
+  )
+
+  const preorder = [
+    'Program',
+    'ExportNamedDeclaration',
+    'FunctionDeclaration',
+    'Identifier',
+    'BlockStatement',
+    'ExpressionStatement',
+    'CallExpression',
+    'MemberExpression',
+    'Identifier',
+    'Identifier',
+    'BinaryExpression',
+    'Literal',
+    'Literal',
+    'ExpressionStatement',
+    'CallExpression',
+    'MemberExpression',
+    'Identifier',
+    'Identifier',
+    'Literal'
+  ]
+
+  const postorder = [
+    'Identifier',
+    'Identifier',
+    'Identifier',
+    'MemberExpression',
+    'Literal',
+    'Literal',
+    'BinaryExpression',
+    'CallExpression',
+    'ExpressionStatement',
+    'Identifier',
+    'Identifier',
+    'MemberExpression',
+    'Literal',
+    'CallExpression',
+    'ExpressionStatement',
+    'BlockStatement',
+    'FunctionDeclaration',
+    'ExportNamedDeclaration',
+    'Program'
+  ]
+
   t.doesNotThrow(() => {
     visit(tree)
   }, 'should succeed w/o tree')
 
   let count = 0
 
-  visit(tree, (node) => {
-    assert.strictEqual(node.type, preorder[count++])
+  visit(tree, {
+    enter(node) {
+      assert.strictEqual(node.type, preorder[count++])
+    }
   })
 
   t.equal(count, 19, 'should walk')
@@ -175,8 +178,16 @@ test('estree-util-visit', (t) => {
 
   count = 0
 
-  // @ts-expect-error runtime.
-  visit({type: 'Program', position: {type: '!'}}, () => {
+  /** @type {Program} */
+  const nodeWithPosition = {
+    type: 'Program',
+    sourceType: 'module',
+    body: [],
+    // @ts-expect-error: custom esast extension.
+    position: {type: '!'}
+  }
+
+  visit(nodeWithPosition, () => {
     count++
   })
 
@@ -184,7 +195,15 @@ test('estree-util-visit', (t) => {
 
   count = 0
 
-  visit({type: 'Program', data: {type: '!'}}, () => {
+  /** @type {Program} */
+  const nodeWithData = {
+    type: 'Program',
+    sourceType: 'module',
+    body: [],
+    // @ts-expect-error: custom esast extension.
+    data: {type: '!'}
+  }
+  visit(nodeWithData, () => {
     count++
   })
 
@@ -192,8 +211,15 @@ test('estree-util-visit', (t) => {
 
   count = 0
 
-  // @ts-expect-error: meant to be custom.
-  visit({type: 'Program', random: {type: '!'}}, () => {
+  /** @type {Program} */
+  const nodeWithRandomField = {
+    type: 'Program',
+    sourceType: 'module',
+    body: [],
+    // @ts-expect-error: random extension.
+    random: {type: '!'}
+  }
+  visit(nodeWithRandomField, () => {
     count++
   })
 
@@ -201,8 +227,15 @@ test('estree-util-visit', (t) => {
 
   count = 0
 
-  // @ts-expect-error: meant to be custom.
-  visit({type: 'Program', random: [1, 2, {type: '!'}]}, () => {
+  /** @type {Program} */
+  const nodeWithAnotherRandomField = {
+    type: 'Program',
+    sourceType: 'module',
+    body: [],
+    // @ts-expect-error: random extension.
+    random: [1, 2, {type: '!'}]
+  }
+  visit(nodeWithAnotherRandomField, () => {
     count++
   })
 
@@ -210,7 +243,7 @@ test('estree-util-visit', (t) => {
 
   tree = JSON.parse(
     JSON.stringify(
-      // @ts-expect-error It’s fine!
+      // @ts-expect-error: it’s a program with an expression statement.
       parse(';[1, 2, 3, 4]', {sourceType: 'module', ecmaVersion: 2021}).body[1]
         .expression
     )

@@ -146,7 +146,7 @@ The return value can have the following forms:
 
 *   `index` (`number`) — treated as a tuple of `[CONTINUE, index]`
 *   `action` (`symbol`) — treated as a tuple of `[action]`
-*   `tuple` (`Array<symbol|number>`) — list with one or two values, the first
+*   `tuple` (`Array<symbol | number>`) — list with one or two values, the first
     an `action`, the second and `index`.
     Note that passing a tuple only makes sense if the `action` is `SKIP`.
     If the `action` is `EXIT`, that action can be returned.
