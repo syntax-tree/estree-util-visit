@@ -34,16 +34,13 @@
   "main": "index.js",
   "types": "index.d.ts",
   "browser": {
-    "./color.js": "./color.browser.js"
+    "./lib/color.js": "./lib/color.browser.js"
   },
   "react-native": {
-    "./color.js": "./color.browser.js"
+    "./lib/color.js": "./lib/color.browser.js"
   },
   "files": [
-    "color.d.ts",
-    "color.js",
-    "color.browser.d.ts",
-    "color.browser.js",
+    "lib/",
     "index.d.ts",
     "index.js"
   ],
@@ -87,7 +84,7 @@
   },
   "remarkConfig": {
     "plugins": [
-      "preset-wooorm"
+      "remark-preset-wooorm"
     ]
   },
   "typeCoverage": {
