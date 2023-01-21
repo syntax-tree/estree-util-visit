@@ -1,6 +1,6 @@
 {
   "name": "estree-util-visit",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "esast (and estree) utility to visit nodes",
   "license": "MIT",
   "keywords": [
