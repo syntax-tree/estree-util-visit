@@ -8,7 +8,7 @@
 [![Backers][backers-badge]][collective]
 [![Chat][chat-badge]][chat]
 
-[esast][] (and [estree][]) utility to visit nodes.
+[estree][] (and [esast][]) utility to visit nodes.
 
 ## Contents
 
@@ -18,6 +18,14 @@
 *   [Use](#use)
 *   [API](#api)
     *   [`visit(tree, visitor|visitors)`](#visittree-visitorvisitors)
+    *   [`CONTINUE`](#continue)
+    *   [`EXIT`](#exit)
+    *   [`SKIP`](#skip)
+    *   [`Action`](#action)
+    *   [`ActionTuple`](#actiontuple)
+    *   [`Index`](#index)
+    *   [`Visitor`](#visitor)
+    *   [`Visitors`](#visitors)
 *   [Types](#types)
 *   [Compatibility](#compatibility)
 *   [Related](#related)
@@ -36,7 +44,7 @@ Use [`unist-util-visit`][unist-util-visit] for other unist ASTs.
 ## Install
 
 This package is [ESM only][esm].
-In Node.js (version 12.20+, 14.14+, 16.0+, or 18.0+), install with [npm][]:
+In Node.js (version 14.14+ and 16.0+), install with [npm][]:
 
 ```sh
 npm install estree-util-visit
@@ -88,13 +96,13 @@ Yields:
 
 ## API
 
-This package exports the identifiers `visit`, `EXIT`, `CONTINUE`, and `SKIP`.
+This package exports the identifiers [`CONTINUE`][continue], [`EXIT`][exit],
+[`SKIP`][skip], and [`visit`][visit].
 There is no default export.
 
 ### `visit(tree, visitor|visitors)`
 
-Visit nodes ([*inclusive descendants*][descendant] of [`tree`][tree]), with
-ancestral information.
+Visit nodes, with ancestral information.
 
 This algorithm performs [*depth-first*][depth-first]
 [*tree traversal*][tree-traversal] in [*preorder*][preorder] (**NLR**) and/or
@@ -111,62 +119,127 @@ operations.
 
 ###### Parameters
 
-*   `tree` ([`Node`][node]) — [tree][] to traverse
-*   `visitor` ([`Function`][visitor])
+*   `tree` ([`Node`][node])
+    — tree to traverse
+*   `visitor` ([`Visitor`][visitor])
     — same as passing `{enter: visitor}`
-*   `visitors` (`{enter: visitor, exit: visitor}`)
-    — two functions, respectively called when entering a node ([preorder][])
-    or before leaving a node ([postorder][])
+*   `visitors` ([`Visitors`][visitors])
+    — handle each node
 
-#### `next? = visitor(node, key, index, ancestors)`
+###### Returns
 
-Called when a node is found.
+Nothing (`void`).
+
+### `CONTINUE`
+
+Continue traversing as normal (`symbol`).
+
+### `EXIT`
+
+Stop traversing immediately (`symbol`).
+
+### `SKIP`
+
+Do not traverse this node’s children (`symbol`).
+
+### `Action`
+
+Union of the action types (TypeScript type).
+
+###### Type
+
+```ts
+type Action = typeof CONTINUE | typeof SKIP | typeof EXIT
+```
+
+### `ActionTuple`
+
+List with one or two values, the first an action, the second an index
+(TypeScript type).
+
+###### Type
+
+```ts
+type ActionTuple = [
+  (Action | null | undefined | void)?,
+  (Index | null | undefined)?
+]
+```
+
+### `Index`
+
+Move to the sibling at `index` next (after node itself is completely
+traversed), when moving in an array (TypeScript type).
+
+Useful if mutating the tree, such as removing the node the visitor is currently
+on, or any of its previous siblings.
+Results less than 0 or greater than or equal to `children.length` stop
+traversing the parent.
+
+###### Type
+
+```ts
+type Index = number
+```
+
+### `Visitor`
+
+Handle a node (TypeScript type).
 
 Visitors are free to transform `node`.
-They can also transform the [parent][] of node (the last of `ancestors`).
+They can also transform the parent of node (the last of `ancestors`).
+
 Replacing `node` itself, if `SKIP` is not returned, still causes its
-[descendant][]s to be walked.
-If adding or removing previous [sibling][]s of `node`, `visitor` should return
-a new [`index`][index] (`number`) to specify the sibling to traverse after
-`node` is traversed.
+descendants to be walked (which is a bug).
+
+When adding or removing previous siblings of `node`, the `Visitor` should
+return a new `Index` to specify the sibling to traverse after `node` is
+traversed.
 Adding or removing next siblings of `node` is handled as expected without
-needing to return a new `index`.
+needing to return a new `Index`.
 
 ###### Parameters
 
-*   `node` ([`Node`][node]) — found node
-*   `key` (`string?`) — field at which `node` lives in its parent
-*   `index` (`number?`) — index at which `node` lives if `parent[key]` is an
-    array
-*   `ancestors` (`Array<Node>`) — [ancestor][]s of `node`
+*   `node` ([`Node`][node])
+    — found node
+*   `key` (`string` or `null`)
+    — field at which `node` lives in its parent (or where a list of nodes
+    lives)
+*   `index` (`number` or `null`)
+    — index where `node` lives if `parent[key]` is an array
+*   `ancestors` ([`Array<Node>`][node])
+    — ancestors of `node`
 
-##### Returns
+###### Returns
 
-The return value can have the following forms:
+What to do next ([`Action`][action], [`Index`][index], or
+[`ActionTuple`][actiontuple], optional).
 
-*   `index` (`number`) — treated as a tuple of `[CONTINUE, index]`
-*   `action` (`symbol`) — treated as a tuple of `[action]`
-*   `tuple` (`Array<symbol | number>`) — list with one or two values, the first
-    an `action`, the second and `index`.
-    Note that passing a tuple only makes sense if the `action` is `SKIP`.
-    If the `action` is `EXIT`, that action can be returned.
-    If the `action` is `CONTINUE`, `index` can be returned.
+An `Index` is treated as a tuple of `[CONTINUE, Index]`.
+An `Action` is treated as a tuple of `[Action]`.
 
-###### `action`
+Passing a tuple back only makes sense if the `Action` is `SKIP`.
+When the `Action` is `EXIT`, that action can be returned.
+When the `Action` is `CONTINUE`, `Index` can be returned.
 
-An action can have the following values:
+### `Visitors`
 
-*   `EXIT` (`symbol`) — stop traversing immediately
-*   `CONTINUE` (`symbol`) — continue traversing as normal (same behaviour
-    as not returning an action)
-*   `SKIP` (`symbol`) — do not traverse this node’s children.
-    Has no effect in `leave`
+Handle nodes when entering (preorder) and leaving (postorder) (TypeScript
+type).
+
+###### Fields
+
+*   `enter` ([`Visitor`][visitor], optional)
+    — handle nodes when entering (preorder)
+*   `leave` ([`Visitor`][visitor], optional)
+    — handle nodes when leaving (postorder)
 
 ## Types
 
 This package is fully typed with [TypeScript][].
-It exports the additional types `Action`, `Index`, `ActionTuple`, `Visitor`,
-and `Visitors`.
+It exports the additional types [`Action`][action],
+[`ActionTuple`][actiontuple], [`Index`][index],
+[`Visitor`][visitor], and [`Visitors`][visitors].
 
 ## Compatibility
 
@@ -242,19 +315,9 @@ abide by its terms.
 
 [coc]: https://github.com/syntax-tree/.github/blob/main/code-of-conduct.md
 
-[index]: https://github.com/syntax-tree/unist#index
-
-[parent]: https://github.com/syntax-tree/unist#parent-1
-
 [esast]: https://github.com/syntax-tree/esast
 
 [estree]: https://github.com/estree/estree
-
-[ancestor]: https://github.com/syntax-tree/unist#ancestor
-
-[descendant]: https://github.com/syntax-tree/unist#descendant
-
-[tree]: https://github.com/syntax-tree/unist#tree
 
 [depth-first]: https://github.com/syntax-tree/unist#depth-first-traversal
 
@@ -268,8 +331,22 @@ abide by its terms.
 
 [node]: https://github.com/syntax-tree/esast#node
 
-[sibling]: https://github.com/syntax-tree/esast#sibling
-
-[visitor]: #next--visitornode-key-index-ancestors
-
 [unist-util-visit]: https://github.com/syntax-tree/unist-util-visit
+
+[continue]: #continue
+
+[exit]: #exit
+
+[skip]: #skip
+
+[visit]: #visittree-visitorvisitors
+
+[visitor]: #visitor
+
+[visitors]: #visitors
+
+[action]: #action
+
+[index]: #index
+
+[actiontuple]: #actiontuple
