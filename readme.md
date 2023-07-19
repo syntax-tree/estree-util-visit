@@ -53,14 +53,14 @@ npm install estree-util-visit
 In Deno with [`esm.sh`][esmsh]:
 
 ```js
-import {visit} from 'https://esm.sh/estree-util-visit@1'
+import {visit} from 'https://esm.sh/estree-util-visit@2'
 ```
 
 In browsers with [`esm.sh`][esmsh]:
 
 ```html
 <script type="module">
-  import {visit} from 'https://esm.sh/estree-util-visit@1?bundle'
+  import {visit} from 'https://esm.sh/estree-util-visit@2?bundle'
 </script>
 ```
 
