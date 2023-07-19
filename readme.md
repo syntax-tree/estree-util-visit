@@ -44,7 +44,7 @@ Use [`unist-util-visit`][unist-util-visit] for other unist ASTs.
 ## Install
 
 This package is [ESM only][esm].
-In Node.js (version 14.14+ and 16.0+), install with [npm][]:
+In Node.js (version 16+), install with [npm][]:
 
 ```sh
 npm install estree-util-visit
@@ -96,8 +96,10 @@ Yields:
 
 ## API
 
-This package exports the identifiers [`CONTINUE`][continue], [`EXIT`][exit],
-[`SKIP`][skip], and [`visit`][visit].
+This package exports the identifiers [`CONTINUE`][api-continue],
+[`EXIT`][api-exit],
+[`SKIP`][api-skip], and
+[`visit`][api-visit].
 There is no default export.
 
 ### `visit(tree, visitor|visitors)`
@@ -121,9 +123,9 @@ operations.
 
 *   `tree` ([`Node`][node])
     — tree to traverse
-*   `visitor` ([`Visitor`][visitor])
+*   `visitor` ([`Visitor`][api-visitor])
     — same as passing `{enter: visitor}`
-*   `visitors` ([`Visitors`][visitors])
+*   `visitors` ([`Visitors`][api-visitors])
     — handle each node
 
 ###### Returns
@@ -149,7 +151,7 @@ Union of the action types (TypeScript type).
 ###### Type
 
 ```ts
-type Action = typeof CONTINUE | typeof SKIP | typeof EXIT
+type Action = typeof CONTINUE | typeof EXIT | typeof SKIP
 ```
 
 ### `ActionTuple`
@@ -212,8 +214,8 @@ needing to return a new `Index`.
 
 ###### Returns
 
-What to do next ([`Action`][action], [`Index`][index], or
-[`ActionTuple`][actiontuple], optional).
+What to do next ([`Action`][api-action], [`Index`][api-index], or
+[`ActionTuple`][api-action-tuple], optional).
 
 An `Index` is treated as a tuple of `[CONTINUE, Index]`.
 An `Action` is treated as a tuple of `[Action]`.
@@ -229,24 +231,29 @@ type).
 
 ###### Fields
 
-*   `enter` ([`Visitor`][visitor], optional)
+*   `enter` ([`Visitor`][api-visitor], optional)
     — handle nodes when entering (preorder)
-*   `leave` ([`Visitor`][visitor], optional)
+*   `leave` ([`Visitor`][api-visitor], optional)
     — handle nodes when leaving (postorder)
 
 ## Types
 
 This package is fully typed with [TypeScript][].
-It exports the additional types [`Action`][action],
-[`ActionTuple`][actiontuple], [`Index`][index],
-[`Visitor`][visitor], and [`Visitors`][visitors].
+It exports the additional types [`Action`][api-action],
+[`ActionTuple`][api-action-tuple],
+[`Index`][api-index],
+[`Visitor`][api-visitor], and
+[`Visitors`][api-visitors].
 
 ## Compatibility
 
-Projects maintained by the unified collective are compatible with all maintained
+Projects maintained by the unified collective are compatible with maintained
 versions of Node.js.
-As of now, that is Node.js 12.20+, 14.14+, 16.0+, and 18.0+.
-Our projects sometimes work with older versions, but this is not guaranteed.
+
+When we cut a new major release, we drop support for unmaintained versions of
+Node.
+This means we try to keep the current release line, `estree-util-visit@^1`,
+compatible with Node.js 12.
 
 ## Related
 
@@ -281,9 +288,9 @@ abide by its terms.
 
 [downloads]: https://www.npmjs.com/package/estree-util-visit
 
-[size-badge]: https://img.shields.io/bundlephobia/minzip/estree-util-visit.svg
+[size-badge]: https://img.shields.io/badge/dynamic/json?label=minzipped%20size&query=$.size.compressedSize&url=https://deno.bundlejs.com/?q=estree-util-visit
 
-[size]: https://bundlephobia.com/result?p=estree-util-visit
+[size]: https://bundlejs.com/?q=estree-util-visit
 
 [sponsors-badge]: https://opencollective.com/unified/sponsors/badge.svg
 
@@ -333,20 +340,20 @@ abide by its terms.
 
 [unist-util-visit]: https://github.com/syntax-tree/unist-util-visit
 
-[continue]: #continue
+[api-continue]: #continue
 
-[exit]: #exit
+[api-action]: #action
 
-[skip]: #skip
+[api-action-tuple]: #actiontuple
 
-[visit]: #visittree-visitorvisitors
+[api-exit]: #exit
 
-[visitor]: #visitor
+[api-index]: #index
 
-[visitors]: #visitors
+[api-skip]: #skip
 
-[action]: #action
+[api-visit]: #visittree-visitorvisitors
 
-[index]: #index
+[api-visitor]: #visitor
 
-[actiontuple]: #actiontuple
+[api-visitors]: #visitors
