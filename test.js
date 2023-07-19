@@ -5,7 +5,7 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import {parse} from 'acorn'
-import {EXIT, SKIP, visit} from './index.js'
+import {EXIT, SKIP, visit} from 'estree-util-visit'
 
 test('visit', async function (t) {
   /** @type {Program} */
@@ -60,7 +60,7 @@ test('visit', async function (t) {
   ]
 
   await t.test('should expose the public api', async function () {
-    assert.deepEqual(Object.keys(await import('./index.js')).sort(), [
+    assert.deepEqual(Object.keys(await import('estree-util-visit')).sort(), [
       'CONTINUE',
       'EXIT',
       'SKIP',

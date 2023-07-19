@@ -31,13 +31,12 @@
   ],
   "sideEffects": false,
   "type": "module",
-  "main": "index.js",
-  "types": "index.d.ts",
-  "browser": {
-    "./lib/color.js": "./lib/color.browser.js"
-  },
-  "react-native": {
-    "./lib/color.js": "./lib/color.browser.js"
+  "exports": {
+    ".": "./index.js",
+    "./do-not-use-color": {
+      "node": "./lib/color.node.js",
+      "default": "./lib/color.default.js"
+    }
   },
   "files": [
     "lib/",
@@ -90,6 +89,7 @@
     "prettier": true,
     "rules": {
       "max-depth": "off",
+      "n/file-extension-in-import": "off",
       "unicorn/prefer-at": "off"
     }
   }
