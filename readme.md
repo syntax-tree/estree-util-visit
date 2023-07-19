@@ -75,7 +75,7 @@ const tree = parse(
   {sourceType: 'module', ecmaVersion: 2020}
 )
 
-visit(tree, (node) => {
+visit(tree, function (node) {
   if (node.type === 'Literal' && 'value' in node) console.log(node.value)
 })
 
@@ -128,7 +128,7 @@ operations.
 
 ###### Returns
 
-Nothing (`void`).
+Nothing (`undefined`).
 
 ### `CONTINUE`
 
