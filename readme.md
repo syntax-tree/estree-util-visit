@@ -202,10 +202,10 @@ needing to return a new `Index`.
 
 *   `node` ([`Node`][node])
     — found node
-*   `key` (`string` or `null`)
+*   `key` (`string` or `undefined`)
     — field at which `node` lives in its parent (or where a list of nodes
     lives)
-*   `index` (`number` or `null`)
+*   `index` (`number` or `undefined`)
     — index where `node` lives if `parent[key]` is an array
 *   `ancestors` ([`Array<Node>`][node])
     — ancestors of `node`

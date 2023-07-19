@@ -200,10 +200,10 @@ test('visit', async function (t) {
       assert.deepEqual(
         [key, index],
         count === 0
-          ? [null, null]
+          ? [undefined, undefined]
           : count === 1
           ? ['body', 0]
-          : ['declaration', null],
+          : ['declaration', undefined],
         '`key` and `index` (' + count + ')'
       )
 
@@ -311,7 +311,7 @@ test('visit', async function (t) {
         if (
           parent &&
           parent.type === 'ArrayExpression' &&
-          index !== null &&
+          index !== undefined &&
           key === 'elements' &&
           node.type === 'Literal' &&
           'value' in node &&
