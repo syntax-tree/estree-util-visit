@@ -46,7 +46,7 @@
   ],
   "dependencies": {
     "@types/estree-jsx": "^1.0.0",
-    "@types/unist": "^2.0.0"
+    "@types/unist": "^3.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
